@@ -1,0 +1,131 @@
+LAMP STACK and WORDPRESS setup for webhosting in centos/redhat6.5
+
+
+install centos, 
+update the packages 
+
+#yum update -y 
+
+install apache 
+
+#yum install httpd -y 
+
+Make the apache daemon permenent
+
+#chkconfig httpd on 
+
+add the iptables rule for port 80 TCP
+#vi /etc/sysconfig/iptables
+add a rule for port 80 using tcp
+-A INPUT -m state --state NEW -M tcp -p tcp --dport 80 -j ACCEPT
+#service iptables restart
+#iptables -nL to check 
+start the apache daemon 
+# service httpd start
+try the apache page setup by typing the ip of our apache server on the browser.
+
+install mysql server 
+
+#yum install mysql-server -y 
+start mysql services 
+#service mysqld start 
+make it permanent
+#chkconfig mysqld on 
+ setup root password for mysql 
+#mysql_secure_installation
+you haven't set the root password yet, the password will be blank,
+so you should just press enter here.
+
+Enter current password for root (enter for none):   hit enter as there is no password 
+OK, successfully used password, moving on...
+
+Setting the root password ensures that nobody can log into the MySQL
+root user without the proper authorisation.
+
+Set root password? [Y/n] y for setting up a new password
+New password:   type the new password
+Re-enter new password: retype the new password
+Password updated successfully!
+Reloading privilege tables..
+ ... Success!
+
+
+By default, a MySQL installation has an anonymous user, allowing anyone
+to log into MySQL without having to have a user account created for
+them.  This is intended only for testing, and to make the installation
+go a bit smoother.  You should remove them before moving into a
+production environment.
+
+Remove anonymous users? [Y/n]   y
+Remove anonymous users? [Y/n] y
+ ... Success!
+
+Normally, root should only be allowed to connect from 'localhost'.  This
+ensures that someone cannot guess at the root password from the network.
+
+Disallow root login remotely? [Y/n] y
+ ... Success!
+
+By default, MySQL comes with a database named 'test' that anyone can
+access.  This is also intended only for testing, and should be removed
+before moving into a production environment.
+
+Remove test database and access to it? [Y/n] y
+ - Dropping test database...
+ ... Success!
+ - Removing privileges on test database...
+ ... Success!
+
+Reloading the privilege tables will ensure that all changes made so far
+will take effect immediately.
+
+Reload privilege tables now? [Y/n] y
+#mysql -u root -p 
+enter the root password created then run these sql commands:
+
+show databases;
+create database webserver;
+create user oracle@localhost identified by 'school1';
+give user oracle access to webserver database
+
+>grant all privileges on webserver.* to oracle@localhost identified by 'school1';
+>flush privileges;
+exit 
+install php 
+#yum install php php-mysql -y
+
+#vi /var/www/html/info.php
+
+<?php phpinfo(); ?>
+:wq!
+
+restart httpd
+#service restart httpd 
+on the browser, type the ipaddress of your linux box to verify the apache page 
+then type /ipaddress/info.php 
+to verify the php page.
+
+install php-gd 
+#yum install php-gd
+
+Wordpress installation
+download the wordpress package
+
+#wget http://wordpress.org/latest.tar.gz
+extract it 
+tar -xzvf latest.tar.gz
+copy wordpress folder content to /var/www/html  folder.
+cp -r wordpress/* /var/www/html/
+
+#mkdir /var/www/html/wp-content/uploads
+#chown -R apache:apache /var/www/html/*
+#cd /var/www/html
+#cp wp-config-sample.php wp-config.php
+vim wp-config.php
+to setup the mysql connection with the webserver database and the user oracle.
+and password 
+
+restart apache
+#service httpd restart.
+
+open the browser and install wordpress.
